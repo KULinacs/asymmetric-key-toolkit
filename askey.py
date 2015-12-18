@@ -1,6 +1,7 @@
 import base64
 import intcodecs
 import asn1key
+import sshkey
 
 class Asymmetric_Key:
 
@@ -8,17 +9,31 @@ class Asymmetric_Key:
         self.__parse_file(filename)
 
     def __parse_file(self, filename):
-        key_file = open(filename, "r")
+        key_file = open(filename, 'r')
+        firstline = key_file.next()
+        if firstline[0] == '-':
+            self.__parse_lines(filename)
+        else:
+            self.__parse_single(filename)
+
+    def __parse_lines(self, filename):
+        key_file = open(filename, 'r')
         key_lines = key_file.readlines()
-        base64key = ""
-        if key_lines[0][:-1] != "-----BEGIN PUBLIC KEY-----":
-            raise KeyError("Unsupported Key Type")
-        for x in range(1, len(key_lines) - 1):
-            base64key += key_lines[x][:-1]
-        decoded_key = base64.b64decode(base64key)
-        #key_values = [chr(byte) for byte in decoded_key]
-        key_bytes = bytearray(decoded_key)
-        self.__parse_bytes(key_bytes)
+        self.header = key_lines[0][:-1]
+        base64_data = ""
+        for line in key_lines[1:-1]:
+            base64_data += line[:-1]
+        self.footer = key_lines[-1]
+        self.__parse_bytes(bytearray(base64.b64decode(base64_data)))
+
+    def __parse_single(self, filename):
+        key_file = open(filename, 'r')
+        key_split = key_file.read().split(' ')
+        self.header = key_split[0]
+        base64_data = key_split[1]
+        self.footer = key_split[-1]
+        binary_data = bytearray(base64.b64decode(base64_data))
+        self.value = sshkey.parse_key(binary_data)
 
     def __parse_bytes(self, key_bytes):
         maintype = key_bytes[0]
@@ -30,8 +45,8 @@ class Asymmetric_Key:
         else:
             len_start = 1
             len_stop = len_start + cur_len - 0x80 + 1
-            parsed_len = intcodecs.defdecode(value_bytes[len_start :
-                                                           len_stop])
+            parsed_len = intcodecs.defdecode(key_bytes[len_start :
+                                                       len_stop])
             data_start = len_stop
             data_stop = data_start + parsed_len + 1
         self.value = asn1key.make_object(maintype,

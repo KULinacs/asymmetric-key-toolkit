@@ -44,7 +44,7 @@ class ASN1_Integer(ASN1_Object):
         return header + hex(self.__value) + ')'
 
     def __set_value(self, value):
-        '''Accepts integer or byte values and also sets the length'''
+        '''Accepts integer or byte values'''
         if isinstance(value, int):
             self.__value = value
             self.__encoded_value = intcodecs.derencode(value)
@@ -253,7 +253,6 @@ class ASN1_Sequence(ASN1_Object):
     
     def __init__(self, value):
         self.__set_value(value)
-        print(':'.join(hex(ord(chr(x))) for x in value))
 
     def __len__(self):
         return len(self.__encoded_value)
@@ -303,7 +302,7 @@ class ASN1_Sequence(ASN1_Object):
                         data_start = i + 2
                     else:
                         len_start = i + 1
-                        data_start = len_start - ident_len - 0x80 + 1
+                        data_start = len_start + (ident_len - 0x80) + 1
                         data_len = intcodecs.defdecode(value[len_start : 
                                                         data_start])
                     data_stop = data_start + data_len

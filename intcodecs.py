@@ -31,7 +31,7 @@ def defdecode(byte_array):
     '''
     try:
         value = 0
-        exponent = (len(byte_array) - 1) * 2 - 2
+        exponent = (len(byte_array) - 2) * 2
         for byte in byte_array[1:]:
             value += byte * pow(16, exponent)
             exponent -= 2
