@@ -218,6 +218,7 @@ class ASN1_ObjectID(ASN1_Object):
     def __set_value(self, value):
         if isinstance(value, str):
             self.__value = value
+            # Check for correctness
             self.__encoded_value = intcodecs.multivlqencode(value.split('.'))
         else:
             try:
