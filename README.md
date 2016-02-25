@@ -19,5 +19,7 @@ NOTE: In an attempt to provide functionality for Python3, some features were bro
 NOTE: The C++ library is significantly newer and is lagging behind in features and ease of use.
 ### Current Features:
 * Base64 Decoding of generated keys
+* Integer codecs that DER requires
+
 ### Features in Progress:
 * DER decoding of key binary data
