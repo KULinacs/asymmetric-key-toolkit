@@ -10,13 +10,13 @@ def defencode(number):
     '''
     try:
         if number < 0x80 and number > -1:
-            return bytearray(chr(number).encode('utf-8'))
+            return bytearray(chr(number))
         elif number >= 0x80:
             hexnumber = hex(number)[2:]
             if len(hexnumber) % 2 == 1:
                 hexnumber = '0' + hexnumber
             byte_count = len(hexnumber) // 2
-            byte_array = bytearray(chr(0x80 + byte_count).encode('utf-8'))
+            byte_array = bytearray(chr(0x80 + byte_count))
             byte_array.extend(bytearray.fromhex(hexnumber))
             return byte_array
         else:
